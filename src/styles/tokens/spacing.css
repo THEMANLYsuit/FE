@@ -1,0 +1,10 @@
+/* THE MANLY 간격 토큰. 럭셔리 톤에서 여백은 장식이 아니라 재료다 — 풀스크린 장면 사이는 더 넉넉히. */
+
+:root {
+  --container-max: 1320px;
+  --gutter-desktop: 60px;
+  --gutter-mobile: 20px;
+
+  --section-y-desktop: 96px;
+  --section-y-mobile: 64px;
+}
