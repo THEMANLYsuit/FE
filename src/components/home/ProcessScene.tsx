@@ -23,10 +23,16 @@ export function ProcessScene() {
   return (
     <Scene id="process" label="제작 과정" bare>
       <div ref={stage} style={{ height: reduced ? "auto" : `${PROCESS.length * 60 + 100}svh` }}>
-        <div className={`${reduced ? "" : "sticky top-0 h-svh"} flex flex-col justify-center px-5 py-16 md:px-10 md:py-24`}>
-          <div className="mx-auto w-full max-w-[1320px]">
+        <div className={`${reduced ? "" : "sticky top-0 h-svh"} flex flex-col justify-center overflow-hidden px-5 py-16 md:px-10 md:py-24`}>
+          <div aria-hidden="true" className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 85% 30%, #2a2219 0%, transparent 60%), linear-gradient(180deg, #0f0e0d 0%, #16130f 100%)" }} />
+          {!reduced && (
+            <span key={step.key} aria-hidden="true" className="step-numeral font-display text-accent pointer-events-none absolute right-[-0.05em] bottom-[-0.1em] text-[38vw] leading-none opacity-[0.06] select-none md:text-[26rem]">
+              {String(active + 1).padStart(2, "0")}
+            </span>
+          )}
+          <div className="relative mx-auto w-full max-w-[1320px]">
             <p data-reveal className="text-accent tracking-label text-2xs">PROCESS</p>
-            <h2 data-reveal style={delay(120)} className="font-display text-primary leading-display mt-3 text-2xl md:text-4xl">
+            <h2 data-reveal style={delay(120)} className="font-display text-primary leading-display tracking-hero mt-3 text-3xl md:text-5xl">
               한 벌이 되기까지, 여섯 번의 만남
             </h2>
 

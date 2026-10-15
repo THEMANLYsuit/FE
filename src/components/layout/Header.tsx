@@ -17,7 +17,8 @@ const NAV = [
   { href: "/booking/", label: "BOOKING", ko: "상담 예약" },
 ];
 
-export function Header({ overHero = false }: { overHero?: boolean }) {
+/** film — 메인처럼 모든 장면이 풀스크린일 때. 끝까지 투명하고 메뉴를 열 때만 굳는다. overHero — 첫 화면만 투명. */
+export function Header({ overHero = false, film = false }: { overHero?: boolean; film?: boolean }) {
   const scrolled = useScrolledPast(0.6);
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
     };
   }, []);
 
-  const solid = !overHero || scrolled || open;
+  const solid = open || (!film && (!overHero || scrolled));
   return (
     <header
       className={`ease-fluid fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-700 ${

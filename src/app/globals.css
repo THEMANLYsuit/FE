@@ -114,11 +114,27 @@ body {
 .film {
   scroll-snap-type: y proximity;
 }
+/* 데스크톱은 한 장면 = 한 화면으로 붙잡는다. 폰은 글이 화면보다 길어질 수 있어 가까울 때만 붙는다 */
+@media (min-width: 768px) {
+  .film {
+    scroll-snap-type: y mandatory;
+  }
+}
 .scene {
   min-height: 100svh;
   scroll-snap-align: start;
   position: relative;
   overflow: hidden;
+}
+/* 장면 위쪽 — 투명 헤더의 글자가 밝은 배경 위에서도 읽히게 */
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 7rem;
+  background: linear-gradient(to bottom, rgba(15, 14, 13, 0.6), transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 html[data-motion="on"] [data-scene] [data-reveal] {
@@ -207,6 +223,111 @@ html[data-motion="on"] .hero-bg {
   transition: transform 700ms var(--ease-soft);
 }
 
+/* ── 스크롤 모션 (2026-10-15) ───────────────────────────────── */
+
+/* 페이지 진행 막대 — 맨 위 2px. 스크롤 구동이 되는 브라우저에서만 보인다 */
+.page-progress {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 55;
+  height: 2px;
+  width: 100%;
+  background: var(--accent-base);
+  transform-origin: left;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  html[data-motion="on"] .page-progress {
+    display: block;
+    animation: page-progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes page-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* 표제 줄 — 아래에서 올라오며 나타난다(줄마다 조금씩 늦게). 장면이 켜질 때 한 번 */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* 세리프 꼬리가 잘리지 않게 */
+  margin-bottom: -0.08em;
+}
+.line-inner {
+  display: block;
+}
+html[data-motion="on"] [data-scene] .line-inner {
+  transform: translateY(110%);
+  transition: transform 1200ms var(--ease-soft);
+  transition-delay: var(--line-delay, 0ms);
+}
+html[data-motion="on"] [data-scene][data-active="true"] .line-inner {
+  transform: none;
+}
+
+/* 글 덩어리 — 장면을 지나는 동안 배경과 반대로 천천히 떠오른다(시차). 스크롤 구동이 되는 브라우저에서만 */
+@supports (animation-timeline: view()) {
+  html[data-motion="on"] .scene-text {
+    animation: scene-text linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes scene-text {
+    from {
+      transform: translateY(7vh);
+    }
+    to {
+      transform: translateY(-7vh);
+    }
+  }
+}
+
+/* 히어로 빛 — 아주 느리게 숨 쉰다 */
+html[data-motion="on"] .hero-glow {
+  animation: hero-glow 14s ease-in-out infinite alternate;
+}
+@keyframes hero-glow {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-4%, 3%) scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* 제작 과정 — 단계가 바뀔 때 뒤의 큰 숫자가 떠오른다 */
+html[data-motion="on"] .step-numeral {
+  animation: step-numeral 700ms var(--ease-soft) both;
+}
+@keyframes step-numeral {
+  from {
+    opacity: 0;
+    transform: translateY(0.15em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 장면 점 — 지금 장면이 길어진다 */
+.scene-dot {
+  transition:
+    width 500ms var(--ease-soft),
+    background-color 500ms var(--ease-soft);
+}
+
 /* 가로 흐르는 띠(원단 이름들) */
 .marquee {
   display: flex;
@@ -228,8 +349,13 @@ html[data-motion="on"] .hero-bg {
     scroll-snap-type: none;
   }
   html[data-motion="on"] [data-scene] [data-reveal],
+  html[data-motion="on"] [data-scene] .line-inner,
   html[data-motion="on"] .scene-bg,
+  html[data-motion="on"] .scene-text,
   html[data-motion="on"] .hero-bg,
+  html[data-motion="on"] .hero-glow,
+  html[data-motion="on"] .step-numeral,
+  .page-progress,
   .marquee,
   .scroll-cue::after,
   .process-track {
