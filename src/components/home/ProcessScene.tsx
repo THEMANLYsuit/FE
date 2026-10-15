@@ -7,7 +7,7 @@ import { PROCESS } from "@/data/process";
 import { useReducedMotion, useScrollProgress } from "@/lib/useScroll";
 
 /**
- * 제작 과정 장면 — 긴 무대(단계 수 × 60vh)를 스크롤하는 동안 화면은 붙잡혀 있고(sticky), 진행 막대가 차오르며
+ * 제작 과정 장면 — 긴 무대(단계 수 × 45vh)를 스크롤하는 동안 화면은 붙잡혀 있고(sticky), 진행 막대가 차오르며
  * 단계가 하나씩 켜진다. 번호 · 제목이 왼쪽에 쌓이고, 지금 단계의 설명이 오른쪽에 바뀐다.
  * 움직임을 줄인 사용자에게는 여섯 단계를 한 번에 펼친다.
  */
@@ -22,7 +22,7 @@ export function ProcessScene() {
 
   return (
     <Scene id="process" label="제작 과정" bare>
-      <div ref={stage} style={{ height: reduced ? "auto" : `${PROCESS.length * 60 + 100}svh` }}>
+      <div ref={stage} style={{ height: reduced ? "auto" : `${PROCESS.length * 45 + 100}svh` }}>
         <div className={`${reduced ? "" : "sticky top-0 h-svh"} flex flex-col justify-center overflow-hidden px-5 py-16 md:px-10 md:py-24`}>
           <div aria-hidden="true" className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 85% 30%, #2a2219 0%, transparent 60%), linear-gradient(180deg, #0f0e0d 0%, #16130f 100%)" }} />
           {!reduced && (

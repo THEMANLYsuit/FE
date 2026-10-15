@@ -11,7 +11,7 @@
  * ════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  --color-base: var(--bg-base);
+  --color-page: var(--bg-base); /* 이름은 page — 'base' 면 text-base(글자 크기)와 충돌해 색으로 해석된다 */
   --color-surface: var(--bg-surface);
   --color-band: var(--bg-subtle);
 
@@ -103,26 +103,19 @@ body {
   background-size: 160px 160px;
 }
 
-/* ── 풀스크린 장면 ──────────────────────────────────────────
- * 메인은 장면(.scene)이 세로로 이어진다. 각 장면은 한 화면(100svh)이고, 스크롤이 가까운 장면에 붙는다(snap proximity —
- * mandatory 가 아니라서 긴 장면을 읽다가 끌려가지 않는다).
+/* ── 빅 히어로 + 스크롤 스토리텔링 ──────────────────────────
+ * 메인은 풀스크린 히어로(.scene) 하나로 열고, 그 아래는 스냅 없이 다섯 장(章)이 글처럼 이어진다 (2026-10-15).
+ * 장은 읽는 길이만큼 길다 — 한 화면에 가두지 않는다. 마지막 예약 장면만 다시 한 화면(.scene).
  * 연출은 두 겹이다:
- *   1. 스크롤 구동(animation-timeline: view()) — 지원 브라우저에서 사진이 느리게 떠오르고 글자가 밀려 올라온다.
+ *   1. 스크롤 구동(animation-timeline: view()) — 지원 브라우저에서 사진이 느리게 떠오르고 항목이 스크롤에 따라 밝아진다(.scrub-in).
  *   2. 그 밖의 브라우저는 IntersectionObserver 가 붙이는 data-active 로 한 번 나타난다 (components/home/Scene 이 data-scene 을 단다).
  * JS 가 없으면(html[data-motion] 없음) 전부 그냥 보인다 — 숨기는 건 스크립트가 붙은 뒤에만.
  */
-.film {
-  scroll-snap-type: y proximity;
-}
-/* 데스크톱은 한 장면 = 한 화면으로 붙잡는다. 폰은 글이 화면보다 길어질 수 있어 가까울 때만 붙는다 */
-@media (min-width: 768px) {
-  .film {
-    scroll-snap-type: y mandatory;
-  }
+.story {
+  scroll-snap-type: none;
 }
 .scene {
   min-height: 100svh;
-  scroll-snap-align: start;
   position: relative;
   overflow: hidden;
 }
@@ -291,6 +284,41 @@ html[data-motion="on"] [data-scene][data-active="true"] .line-inner {
   }
 }
 
+/* 장(章)의 항목 — 스크롤에 따라 하나씩 밝아진다(스크롤 구동). 아래에서 화면 60% 까지 올라오는 동안 흐림 → 또렷.
+ * 지원하지 않는 브라우저는 그냥 보인다(data-reveal 과 달리 숨겨 두지 않는다 — 긴 장에서 놓치는 항목이 없게) */
+@supports (animation-timeline: view()) {
+  html[data-motion="on"] .scrub-in {
+    animation: scrub-in linear both;
+    animation-timeline: view();
+    animation-range: entry 15% entry 70%;
+  }
+  @keyframes scrub-in {
+    from {
+      opacity: 0.12;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* 선언문 낱말 — 스크롤 진행이 닿으면 밝아진다(ScrubText 가 data-lit 을 단다) */
+.scrub-word {
+  display: inline-block;
+  opacity: 0.16;
+  transition: opacity 450ms var(--ease-soft);
+}
+.scrub-word[data-lit="true"] {
+  opacity: 1;
+}
+
+/* 장의 바탕 — 위아래 경계 없이 잉크 속에서 아주 조금 밝아졌다 어두워진다 */
+.chapter {
+  background: linear-gradient(180deg, transparent 0%, #141210 50%, transparent 100%);
+}
+
 /* 히어로 빛 — 아주 느리게 숨 쉰다 */
 html[data-motion="on"] .hero-glow {
   animation: hero-glow 14s ease-in-out infinite alternate;
@@ -345,9 +373,6 @@ html[data-motion="on"] .step-numeral {
   html {
     scroll-behavior: auto;
   }
-  .film {
-    scroll-snap-type: none;
-  }
   html[data-motion="on"] [data-scene] [data-reveal],
   html[data-motion="on"] [data-scene] .line-inner,
   html[data-motion="on"] .scene-bg,
@@ -355,6 +380,8 @@ html[data-motion="on"] .step-numeral {
   html[data-motion="on"] .hero-bg,
   html[data-motion="on"] .hero-glow,
   html[data-motion="on"] .step-numeral,
+  html[data-motion="on"] .scrub-in,
+  .scrub-word,
   .page-progress,
   .marquee,
   .scroll-cue::after,

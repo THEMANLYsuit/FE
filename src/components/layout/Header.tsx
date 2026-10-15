@@ -36,7 +36,7 @@ export function Header({ overHero = false, film = false }: { overHero?: boolean;
   return (
     <header
       className={`ease-fluid fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-700 ${
-        solid ? "border-subtle bg-base/85 border-b backdrop-blur-md" : "border-transparent bg-transparent"
+        solid ? "border-subtle bg-page/85 border-b backdrop-blur-md" : "border-transparent bg-transparent"
       }`}
     >
       <div className="flex h-16 items-center justify-between px-5 md:h-20 md:px-10">
