@@ -120,9 +120,73 @@ export const book = (type: AppointmentType, startsAt: string, note: string) =>
 export const myAppointments = () => request<Appointment[]>("GET", "/api/bookings/mine");
 export const cancelAppointment = (id: string) => request<Appointment>("POST", `/api/bookings/${encodeURIComponent(id)}/cancel`);
 
+// ── 치수 ─────────────────────────────────────────────────
+
+export interface MeasurementPointView {
+  point: string;
+  label: string;
+  group: "BODY" | "TOP" | "BOTTOM";
+  groupLabel: string;
+  unit: string;
+  value: number;
+}
+export interface MeasurementRecord {
+  id: string;
+  measuredOn: string;
+  bodyNote: string;
+  points: MeasurementPointView[];
+}
+
+/** 내 치수 — 최근 것부터. 매장에서 재고 관리자가 적는다(손님은 읽기만). */
+export const myMeasurements = () => request<MeasurementRecord[]>("GET", "/api/me/measurements");
+
+// ── 맞춤 주문 ─────────────────────────────────────────────
+
+export type OrderStage = "CONSULTATION" | "MEASUREMENT" | "FABRIC" | "FITTING" | "ADJUSTMENT" | "DELIVERY";
+export type OrderStatus = "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+
+/** 단계 순서 — BE OrderStage · data/process.ts 와 같다. */
+export const ORDER_STAGES: OrderStage[] = ["CONSULTATION", "MEASUREMENT", "FABRIC", "FITTING", "ADJUSTMENT", "DELIVERY"];
+
+export interface OrderSummary {
+  orderNumber: string;
+  title: string;
+  garment: string;
+  garmentLabel: string;
+  stage: OrderStage;
+  stageLabel: string;
+  status: OrderStatus;
+  statusLabel: string;
+  dueOn: string | null;
+  createdAt: string | null;
+  lastEventAt: string;
+}
+export interface OrderDetail {
+  summary: OrderSummary;
+  fabric: { code: string; name: string; mill: string; composition: string; imageUrl: string | null } | null;
+  fabricNote: string;
+  styles: { category: string; categoryLabel: string; code: string; name: string }[];
+  measuredOn: string | null;
+  priceKrw: number | null;
+  depositKrw: number;
+  balanceKrw: number | null;
+  cancelReason: string | null;
+  steps: { stage: OrderStage; label: string; done: boolean; current: boolean }[];
+  /** 최근 것부터 */
+  timeline: { kind: "CREATED" | "STAGE" | "NOTE" | "COMPLETED" | "CANCELLED"; stage: OrderStage; stageLabel: string; message: string; at: string }[];
+}
+
+export const myOrders = () => request<OrderSummary[]>("GET", "/api/orders/mine");
+export const myOrder = (orderNumber: string) => request<OrderDetail>("GET", `/api/orders/mine/${encodeURIComponent(orderNumber)}`);
+
 // ── 표시 ─────────────────────────────────────────────────
 
 const WHEN = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" });
 export const when = (iso: string) => WHEN.format(new Date(iso));
 const TIME = new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" });
 export const timeOf = (iso: string) => TIME.format(new Date(iso));
+const DATE = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Seoul" });
+/** yyyy-MM-dd(한국 날짜) 또는 ISO 시각 → 2026년 10월 14일 */
+export const dateOf = (value: string) => DATE.format(new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00+09:00` : value));
+const KRW = new Intl.NumberFormat("ko-KR");
+export const won = (krw: number) => `${KRW.format(krw)}원`;
