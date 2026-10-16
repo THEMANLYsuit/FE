@@ -369,7 +369,33 @@ html[data-motion="on"] .step-numeral {
   }
 }
 
+/* 스크롤 필름 문장 — 구간이 바뀌면 아래에서 떠오른다(key 가 바뀌어 다시 붙을 때마다) */
+.film-caption {
+  animation: film-caption 900ms var(--ease-soft) both;
+}
+@keyframes film-caption {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 하이라이트 줄 — 스크롤바는 숨긴다(점 · 화살표 · 밀기로 넘긴다). 키보드는 카드 안 링크 · 점 버튼으로 */
+.highlights-track {
+  scrollbar-width: none;
+}
+.highlights-track::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .film-caption {
+    animation: none !important;
+  }
   html {
     scroll-behavior: auto;
   }

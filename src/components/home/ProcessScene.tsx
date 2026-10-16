@@ -31,7 +31,7 @@ export function ProcessScene() {
             </span>
           )}
           <div className="relative mx-auto w-full max-w-[1320px]">
-            <p data-reveal className="text-accent tracking-label text-2xs">PROCESS</p>
+            <p data-reveal className="text-accent tracking-label text-2xs">04 — PROCESS</p>
             <h2 data-reveal style={delay(120)} className="font-display text-primary leading-display tracking-hero mt-3 text-3xl md:text-5xl">
               한 벌이 되기까지, 여섯 번의 만남
             </h2>

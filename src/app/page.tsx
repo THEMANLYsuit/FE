@@ -2,10 +2,13 @@ import { ArrowDown, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
 import { Chapter } from "@/components/home/Chapter";
+import { CloserLook } from "@/components/home/CloserLook";
+import { Highlights } from "@/components/home/Highlights";
 import { Line } from "@/components/home/Line";
 import { ProcessScene } from "@/components/home/ProcessScene";
 import { Scene } from "@/components/home/Scene";
 import { SceneDots } from "@/components/home/SceneDots";
+import { ScrollFilm } from "@/components/home/ScrollFilm";
 import { ScrubText } from "@/components/home/ScrubText";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -14,6 +17,8 @@ import { getFabrics, won } from "@/lib/catalog";
 
 /**
  * 메인 — 빅 히어로 하나 + 스크롤 스토리텔링 (2026-10-15 "빅히어로 타입 + 스크롤 스토리텔링 형식으로").
+ * 2026-10-16 "더맨리 영상처럼" — 애플 제품 페이지식 장치 셋을 더했다: 스크롤 필름(ScrollFilm) · 하이라이트 카드(Highlights) ·
+ * 가까이 보기(CloserLook). 사진 · 영상 자리는 data/story.ts 에 주소만 넣으면 바뀐다.
  *
  * 첫 화면만 풀스크린 히어로다. 그 다음은 슬라이드처럼 한 장씩 넘기는 게 아니라, 한 편의 글을 내려 읽듯
  * 다섯 장(章)이 이어진다 — 스냅 없이, 읽는 길이만큼. 장마다 연출이 다르다:
@@ -32,11 +37,14 @@ const delay = (ms: number) =>
   ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
 const CHAPTERS = [
-  ["01", "몸", "#body"],
-  ["02", "과정", "#process"],
-  ["03", "기록", "#record"],
-  ["04", "원단", "#fabrics"],
-  ["05", "만남", "#booking"],
+  ["01", "재단", "#film"],
+  ["02", "몸", "#body"],
+  ["03", "한눈에", "#highlights"],
+  ["04", "과정", "#process"],
+  ["05", "가까이", "#closer"],
+  ["06", "기록", "#record"],
+  ["07", "원단", "#fabrics"],
+  ["08", "만남", "#booking"],
 ] as const;
 
 const PROMISES = [
@@ -169,10 +177,13 @@ export default async function Home() {
           </div>
         </Scene>
 
-        {/* ── 01 몸 — 표제는 붙잡히고, 약속이 하나씩 밝아진다 ───────── */}
+        {/* ── 01 재단 — 스크롤 필름: 붙잡힌 무대에서 영상이 스크롤로 재생된다 ── */}
+        <ScrollFilm />
+
+        {/* ── 02 몸 — 표제는 붙잡히고, 약속이 하나씩 밝아진다 ───────── */}
         <Chapter
           id="body"
-          n="01"
+          n="02"
           en="THE BODY"
           label="몸"
           title={["사진이 아니라", "몸으로 고릅니다"]}
@@ -197,21 +208,27 @@ export default async function Home() {
           </ol>
         </Chapter>
 
-        {/* ── 02 과정 — 붙잡힌 무대 ───────────────────────────── */}
+        {/* ── 03 한눈에 — 가로로 넘기는 하이라이트 카드 ──────────────── */}
+        <Highlights />
+
+        {/* ── 04 과정 — 붙잡힌 무대 ───────────────────────────── */}
         <ProcessScene />
 
-        {/* ── 03 기록 — 선언문 ─────────────────────────────────── */}
+        {/* ── 05 가까이 — 목록을 고르면 큰 사진이 바뀐다 ──────────────── */}
+        <CloserLook />
+
+        {/* ── 06 기록 — 선언문 ─────────────────────────────────── */}
         <ScrubText
           id="record"
           label="기록"
-          en="03 — THE RECORD"
+          en="06 — THE RECORD"
           text={MANIFESTO}
         />
 
-        {/* ── 04 원단 — 이름이 흘러 지나간다 ─────────────────────── */}
+        {/* ── 07 원단 — 이름이 흘러 지나간다 ─────────────────────── */}
         <Chapter
           id="fabrics"
-          n="04"
+          n="07"
           en="FABRICS"
           label="원단"
           title={["손으로 만져", "고르는 원단"]}
@@ -256,7 +273,7 @@ export default async function Home() {
           </div>
         </Chapter>
 
-        {/* ── 05 만남 — 마지막 한 화면 ───────────────────────────── */}
+        {/* ── 08 만남 — 마지막 한 화면 ───────────────────────────── */}
         <Scene id="booking" label="만남" className="flex items-center">
           <div
             aria-hidden="true"
@@ -268,7 +285,7 @@ export default async function Home() {
           />
           <div className="scene-text relative z-10 mx-auto w-full max-w-[1320px] px-5 py-24 text-center md:px-10">
             <p data-reveal className="text-accent tracking-label text-2xs">
-              05 — BOOKING
+              08 — BOOKING
             </p>
             <h2 className="font-display text-primary leading-hero tracking-hero mt-5 text-4xl break-keep md:text-hero">
               <Line>첫 상담은</Line>
