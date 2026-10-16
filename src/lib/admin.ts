@@ -162,3 +162,77 @@ export const closeInquiry = (id: string) =>
     "POST",
     `/api/admin/inquiries/${encodeURIComponent(id)}/close`,
   );
+
+// ── 메인 필름 (서버 V11) ─────────────────────────────────
+
+export interface FilmSequence {
+  id: string;
+  frames: number;
+  fps: number;
+  base: string;
+  pad: number;
+  ext: string;
+}
+
+export interface AdminFilmView {
+  id: string;
+  frames: number;
+  fps: number;
+  originalFilename: string;
+  byteSize: number;
+  active: boolean;
+  createdAt: string;
+  sequence: FilmSequence;
+}
+
+export const getFilmAdmin = () =>
+  call<{ current: AdminFilmView | null; recent: AdminFilmView[] }>(
+    "GET",
+    "/api/admin/film",
+  );
+
+/**
+ * 영상 올리기 — 수십 MB 라 진행률이 필요해 fetch 대신 XHR. onProgress(0~1) 가 1 이 되면 서버가 사진으로 뽑는 중이다.
+ */
+export async function uploadFilm(
+  file: File,
+  onProgress: (ratio: number) => void,
+): Promise<AdminFilmView> {
+  if (!API_CONNECTED)
+    throw new ApiError("NOT_CONNECTED", "서버가 아직 연결되지 않았습니다.", 0);
+  const headers = await csrfHeader();
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/api/admin/film`);
+    xhr.withCredentials = true;
+    Object.entries(headers).forEach(([k, v]) => xhr.setRequestHeader(k, v));
+    xhr.upload.onprogress = (e) =>
+      e.lengthComputable && onProgress(e.loaded / e.total);
+    xhr.onload = () => {
+      let body: { code?: string; message?: string } & Partial<AdminFilmView> =
+        {};
+      try {
+        body = JSON.parse(xhr.responseText);
+      } catch {
+        // 본문 없음(413 등)
+      }
+      if (xhr.status >= 200 && xhr.status < 300) resolve(body as AdminFilmView);
+      else
+        reject(
+          new ApiError(
+            body.code ?? "UNKNOWN",
+            body.message ??
+              (xhr.status === 413
+                ? "영상이 너무 큽니다."
+                : "올리지 못했습니다."),
+            xhr.status,
+          ),
+        );
+    };
+    xhr.onerror = () =>
+      reject(new ApiError("NETWORK", "서버에 연결하지 못했습니다.", 0));
+    const form = new FormData();
+    form.append("file", file);
+    xhr.send(form);
+  });
+}

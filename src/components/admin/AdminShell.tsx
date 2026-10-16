@@ -76,7 +76,7 @@ const NAV: Item[] = [
     href: "/admin/film/",
     label: "메인 영상 · 사진",
     icon: FilmStrip,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/access-logs/",

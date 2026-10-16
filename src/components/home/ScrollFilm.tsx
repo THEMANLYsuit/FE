@@ -1,10 +1,11 @@
 "use client";
 
 import { ArrowDown } from "@phosphor-icons/react/dist/ssr";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Scene } from "@/components/home/Scene";
 import { FILM } from "@/data/story";
+import { API_BASE, API_CONNECTED } from "@/lib/site";
 import { progressOf, useReducedMotion, useScrollStep } from "@/lib/useScroll";
 
 /**
@@ -28,10 +29,31 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
   const reduced = useReducedMotion();
   const frames = FILM.frames;
   const phases = frames.length + 1;
-  const phase = useScrollStep(stage, (p) => Math.min(phases - 1, Math.floor(p * phases)));
+  const phase = useScrollStep(stage, (p) =>
+    Math.min(phases - 1, Math.floor(p * phases)),
+  );
   const onHero = phase === 0;
   const active = phase - 1;
-  const seq = FILM.sequence;
+  // 관리자가 올린 필름(서버 V11)이 있으면 그것 — 없거나 서버가 없으면 빌드에 든 기본 묶음(data/story.ts)
+  const [remote, setRemote] = useState<NonNullable<
+    typeof FILM.sequence
+  > | null>(null);
+  const seq = remote ?? FILM.sequence;
+
+  useEffect(() => {
+    if (!API_CONNECTED) return;
+    let alive = true;
+    fetch(`${API_BASE}/api/film`)
+      .then((r) => (r.status === 200 ? r.json() : null))
+      .then((s) => {
+        if (alive && s?.frames > 0)
+          setRemote({ base: s.base, pad: s.pad, ext: s.ext, count: s.frames });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (reduced) return;
@@ -41,12 +63,15 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
     if (!el) return;
 
     // 사진 묶음 — 첫 장은 바로, 나머지는 차례로 받는다. 아직 안 온 장은 가장 가까운 받은 장으로 그린다
-    const images: (HTMLImageElement | null)[] = seq ? new Array(seq.count).fill(null) : [];
+    const images: (HTMLImageElement | null)[] = seq
+      ? new Array(seq.count).fill(null)
+      : [];
     let alive = true;
     let drawn = -1;
     let frame = 0;
 
-    const src = (i: number) => `${seq!.base}${String(i + 1).padStart(seq!.pad, "0")}${seq!.ext}`;
+    const src = (i: number) =>
+      `${seq!.base}${String(i + 1).padStart(seq!.pad, "0")}${seq!.ext}`;
     const nearestLoaded = (i: number) => {
       for (let d = 0; d < images.length; d++) {
         if (images[i - d]?.complete) return images[i - d]!;
@@ -69,7 +94,10 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
       const img = images[i]?.complete ? images[i]! : nearestLoaded(i);
       if (!img || !img.naturalWidth) return;
       // object-fit: cover — 화면 비율에 맞게 가운데를 잘라 그린다(폰은 세로로 가운데)
-      const scale = Math.max(cv.width / img.naturalWidth, cv.height / img.naturalHeight);
+      const scale = Math.max(
+        cv.width / img.naturalWidth,
+        cv.height / img.naturalHeight,
+      );
       const w = img.naturalWidth * scale;
       const h = img.naturalHeight * scale;
       ctx.drawImage(img, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
@@ -85,7 +113,8 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
       }
       // 진행 막대 — 문장 구간(둘째 구간부터)만큼 차오른다. 렌더 없이 직접 칠한다
       bars.current.forEach((bar, k) => {
-        if (bar) bar.style.transform = `scaleX(${Math.min(1, Math.max(0, p * phases - 1 - k))})`;
+        if (bar)
+          bar.style.transform = `scaleX(${Math.min(1, Math.max(0, p * phases - 1 - k))})`;
       });
     }
 
@@ -114,7 +143,11 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
         if (!alive) return;
         update();
         for (let i = 1; i < seq.count && alive; i += 6) {
-          await Promise.all(Array.from({ length: Math.min(6, seq.count - i) }, (_, k) => load(i + k)));
+          await Promise.all(
+            Array.from({ length: Math.min(6, seq.count - i) }, (_, k) =>
+              load(i + k),
+            ),
+          );
           if (alive && drawn !== -1) update();
         }
       });
@@ -135,7 +168,10 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
     <div
       aria-hidden="true"
       className="absolute inset-0"
-      style={{ background: "linear-gradient(to top, rgba(15,14,13,0.94) 0%, rgba(15,14,13,0.35) 50%, rgba(15,14,13,0.15) 75%, transparent 100%)" }}
+      style={{
+        background:
+          "linear-gradient(to top, rgba(15,14,13,0.94) 0%, rgba(15,14,13,0.35) 50%, rgba(15,14,13,0.15) 75%, transparent 100%)",
+      }}
     />
   );
 
@@ -151,8 +187,12 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
           {frames.map((f) => (
             <div key={f.eyebrow}>
               <p className="text-accent tracking-label text-2xs">{f.eyebrow}</p>
-              <h2 className="font-display text-primary leading-display mt-3 text-3xl md:text-5xl">{f.title}</h2>
-              <p className="text-secondary mt-4 max-w-[46ch] text-base leading-relaxed">{f.body}</p>
+              <h2 className="font-display text-primary leading-display mt-3 text-3xl md:text-5xl">
+                {f.title}
+              </h2>
+              <p className="text-secondary mt-4 max-w-[46ch] text-base leading-relaxed">
+                {f.body}
+              </p>
             </div>
           ))}
         </div>
@@ -166,7 +206,13 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
         <div className="sticky top-0 h-svh overflow-hidden">
           {/* 첫 장이 그려지기 전에도 비어 보이지 않게 — 정지 사진(또는 잉크) 위에 캔버스를 얹는다 */}
           <Backdrop src={FILM.poster} />
-          {seq && <canvas ref={canvas} aria-hidden="true" className="absolute inset-0 h-full w-full" />}
+          {seq && (
+            <canvas
+              ref={canvas}
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
           {shade}
 
           {/* 히어로 — 첫 구간에만 보인다. 사라져도 자리를 지킨다(투명 · 클릭 막음) */}
@@ -181,10 +227,20 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
           {/* 문장 — 둘째 구간부터. 구간이 바뀌면 key 가 바뀌어 다시 떠오른다 */}
           {!onHero && (
             <div className="relative z-10 mx-auto flex h-full w-full max-w-[1320px] items-end px-5 pb-20 md:px-10 md:pb-24">
-              <div key={active} className="film-caption max-w-[36rem]" aria-live="polite">
-                <p className="text-accent tracking-label text-2xs">{frames[active].eyebrow}</p>
-                <h2 className="font-display text-primary leading-hero tracking-hero mt-4 text-4xl break-keep md:text-6xl">{frames[active].title}</h2>
-                <p className="text-secondary mt-5 text-base leading-relaxed md:text-lg">{frames[active].body}</p>
+              <div
+                key={active}
+                className="film-caption max-w-[36rem]"
+                aria-live="polite"
+              >
+                <p className="text-accent tracking-label text-2xs">
+                  {frames[active].eyebrow}
+                </p>
+                <h2 className="font-display text-primary leading-hero tracking-hero mt-4 text-4xl break-keep md:text-6xl">
+                  {frames[active].title}
+                </h2>
+                <p className="text-secondary mt-5 text-base leading-relaxed md:text-lg">
+                  {frames[active].body}
+                </p>
               </div>
             </div>
           )}
@@ -197,9 +253,15 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
             SCROLL
             <ArrowDown size={10} weight="light" className="mt-1" />
           </div>
-          <div aria-hidden="true" className={`absolute right-5 bottom-8 z-10 flex gap-2 md:right-10 ${onHero ? "invisible" : ""}`}>
+          <div
+            aria-hidden="true"
+            className={`absolute right-5 bottom-8 z-10 flex gap-2 md:right-10 ${onHero ? "invisible" : ""}`}
+          >
             {frames.map((f, i) => (
-              <span key={f.eyebrow} className="bg-strong relative block h-px w-10 overflow-hidden">
+              <span
+                key={f.eyebrow}
+                className="bg-strong relative block h-px w-10 overflow-hidden"
+              >
                 <span
                   ref={(node) => {
                     bars.current[i] = node;
@@ -220,11 +282,27 @@ export function ScrollFilm({ hero }: { hero: ReactNode }) {
 function Backdrop({ src }: { src: string | null }) {
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element -- 정적 내보내기라 next/image 최적화가 없다
-    return <img src={src} alt="" aria-hidden="true" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />;
+    return (
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    );
   }
   return (
-    <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 40% 50% at 35% 40%, rgba(201,168,106,0.16) 0%, transparent 70%), linear-gradient(180deg, #0f0e0d 0%, #171411 60%, #0f0e0d 100%)" }}>
-      <span className="text-muted/60 tracking-label absolute top-24 right-5 text-[0.6rem] md:right-10">VIDEO · {FILM.shotHint}</span>
+    <div
+      className="absolute inset-0"
+      style={{
+        background:
+          "radial-gradient(ellipse 40% 50% at 35% 40%, rgba(201,168,106,0.16) 0%, transparent 70%), linear-gradient(180deg, #0f0e0d 0%, #171411 60%, #0f0e0d 100%)",
+      }}
+    >
+      <span className="text-muted/60 tracking-label absolute top-24 right-5 text-[0.6rem] md:right-10">
+        VIDEO · {FILM.shotHint}
+      </span>
     </div>
   );
 }
