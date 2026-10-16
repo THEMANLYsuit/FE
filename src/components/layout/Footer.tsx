@@ -26,6 +26,7 @@ export function Footer() {
             { href: "/fabrics/", label: "FABRICS" },
             { href: "/process/", label: "PROCESS" },
             { href: "/booking/", label: "BOOKING" },
+            { href: "/contact/", label: "CONTACT" },
             { href: "/mypage/", label: "MY" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="text-secondary hover:text-primary tracking-label ease-fluid inline-flex min-h-11 items-center text-2xs transition-colors duration-300">

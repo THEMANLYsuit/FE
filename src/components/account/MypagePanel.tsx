@@ -5,19 +5,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { MyBookings } from "@/components/account/MyBookings";
+import { MyInquiries } from "@/components/account/MyInquiries";
 import { MyMeasurements } from "@/components/account/MyMeasurements";
 import { MyOrders } from "@/components/account/MyOrders";
 import { logout, me, type CurrentUser } from "@/lib/api";
 import { API_CONNECTED } from "@/lib/site";
 
 /**
- * 마이페이지 — 탭 셋(예약 · 맞춤 주문 · 치수). 탭은 주소의 # 로 기억한다(#orders) — 새로고침 · 뒤로 가기 · 메일 속 링크가 같은 탭을 연다.
+ * 마이페이지 — 탭 넷(예약 · 맞춤 주문 · 치수 · 문의). 문의 탭(#inquiries)은 답변 메일 속 링크가 연다. 탭은 주소의 # 로 기억한다(#orders) — 새로고침 · 뒤로 가기 · 메일 속 링크가 같은 탭을 연다.
  * 로그인 확인은 여기서 한 번만 하고, 탭 안의 목록은 각자 불러온다.
  */
 const TABS = [
   { id: "bookings", label: "예약", en: "BOOKINGS" },
   { id: "orders", label: "맞춤 주문", en: "ORDERS" },
   { id: "measurements", label: "치수", en: "MEASUREMENTS" },
+  { id: "inquiries", label: "문의", en: "INQUIRIES" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -75,7 +77,7 @@ export function MypagePanel() {
         </button>
       </div>
 
-      <div role="tablist" aria-label="마이페이지" className="border-subtle grid grid-cols-3 border-b">
+      <div role="tablist" aria-label="마이페이지" className="border-subtle grid grid-cols-4 border-b">
         {TABS.map((t) => {
           const on = t.id === tab;
           return (
@@ -104,6 +106,7 @@ export function MypagePanel() {
         {tab === "bookings" && <MyBookings />}
         {tab === "orders" && <MyOrders />}
         {tab === "measurements" && <MyMeasurements />}
+        {tab === "inquiries" && <MyInquiries />}
       </div>
     </div>
   );

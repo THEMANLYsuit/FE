@@ -179,6 +179,47 @@ export interface OrderDetail {
 export const myOrders = () => request<OrderSummary[]>("GET", "/api/orders/mine");
 export const myOrder = (orderNumber: string) => request<OrderDetail>("GET", `/api/orders/mine/${encodeURIComponent(orderNumber)}`);
 
+// ── 문의 (BE V8) ─────────────────────────────────────────
+
+export type InquiryTopic = "GENERAL" | "BOOKING" | "ORDER" | "FABRIC" | "OTHER";
+export type InquiryStatus = "OPEN" | "ANSWERED" | "CLOSED";
+
+/** 서버 Inquiry.Topic 라벨과 같아야 한다 — 고르는 화면이 서버를 부르기 전에 그린다. */
+export const INQUIRY_TOPIC_LABEL: Record<InquiryTopic, string> = {
+  GENERAL: "일반 문의",
+  BOOKING: "예약",
+  ORDER: "진행 중인 주문",
+  FABRIC: "원단 · 스타일",
+  OTHER: "기타",
+};
+
+export interface Inquiry {
+  id: string;
+  topic: InquiryTopic;
+  topicLabel: string;
+  message: string;
+  status: InquiryStatus;
+  statusLabel: string;
+  answer: string | null;
+  answeredAt: string | null;
+  createdAt: string;
+}
+
+/**
+ * 문의 보내기 — 로그인 없이도 된다. 로그인했으면 서버가 가입 정보(이름 · 이메일)를 쓰고 name · email 은 무시한다.
+ * website 는 허니팟 — 사람은 비워 둔다(화면에서 숨긴 칸). 채워져 오면 서버가 받은 척만 하고 저장하지 않는다(본문 없음).
+ */
+export const submitInquiry = (body: {
+  name?: string;
+  email?: string;
+  phone?: string;
+  topic: InquiryTopic;
+  message: string;
+  website: string;
+}) => request<Inquiry | undefined>("POST", "/api/inquiries", body);
+
+export const myInquiries = () => request<Inquiry[]>("GET", "/api/inquiries/mine");
+
 // ── 표시 ─────────────────────────────────────────────────
 
 const WHEN = new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" });

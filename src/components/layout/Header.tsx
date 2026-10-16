@@ -9,12 +9,13 @@ import { useScrolledPast } from "@/lib/useScroll";
 
 /**
  * 전역 헤더 — 메인의 풀스크린 장면 위에 떠 있다가(투명), 첫 화면을 지나면 잉크 유리 바로 굳는다.
- * 내비는 넷뿐이다: 원단 · 과정 · 상담 예약 · 내 예약(로그인). 맞춤정장은 둘러볼 상품이 없다 — 상담으로 보내는 게 헤더의 일이다.
+ * 내비는 다섯뿐이다: 원단 · 과정 · 상담 예약 · 문의 · 내 예약(로그인). 맞춤정장은 둘러볼 상품이 없다 — 상담으로 보내는 게 헤더의 일이다.
  */
 const NAV = [
   { href: "/fabrics/", label: "FABRICS", ko: "원단" },
   { href: "/process/", label: "PROCESS", ko: "제작 과정" },
   { href: "/booking/", label: "BOOKING", ko: "상담 예약" },
+  { href: "/contact/", label: "CONTACT", ko: "문의하기" },
 ];
 
 /** film — 메인처럼 모든 장면이 풀스크린일 때. 끝까지 투명하고 메뉴를 열 때만 굳는다. overHero — 첫 화면만 투명. */
