@@ -45,6 +45,28 @@ export function useScrollProgress(ref: RefObject<HTMLElement | null>): number {
   );
 }
 
+/** 긴 무대(ref)를 지나는 동안의 진행(0 → 1)을 읽는다. 렌더 없이 — 스크롤 핸들러 · rAF 안에서 직접 쓸 때. */
+export function progressOf(el: HTMLElement | null): number {
+  if (!el) return 0;
+  const rect = el.getBoundingClientRect();
+  const range = rect.height - window.innerHeight;
+  if (range <= 0) return 0;
+  return Math.min(1, Math.max(0, -rect.top / range));
+}
+
+/**
+ * 진행을 <b>정수</b>로 바꿔 읽는다 — 그 정수가 바뀔 때만 다시 그린다(2026-10-16 "너무 렉"). 0.001 단위 진행을 그대로 주면
+ * 스크롤 한 번에 수십 번 렌더된다. 단계(지금 몇 번째 구간 · 몇 글자까지 밝힘)만 화면에 필요하면 이걸 쓴다.
+ * map 은 0~1 진행을 받아 정수를 돌려준다.
+ */
+export function useScrollStep(ref: RefObject<HTMLElement | null>, map: (progress: number) => number): number {
+  return useSyncExternalStore(
+    subscribeScroll,
+    () => map(progressOf(ref.current)),
+    () => 0,
+  );
+}
+
 const REDUCED = "(prefers-reduced-motion: reduce)";
 
 export function useReducedMotion(): boolean {

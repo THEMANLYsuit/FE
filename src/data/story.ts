@@ -7,15 +7,41 @@
 
 /** 1 · 스크롤 필름 — 화면은 붙잡혀 있고 스크롤하면 영상이 앞뒤로 재생된다. 문장은 구간마다 바뀐다. */
 export const FILM = {
-  /** 모델이 제자리에서 천천히 한 바퀴 도는 10~15초 영상(mp4). 비우면 자리표시. 예: "/brand/film-turn.mp4" */
-  video: null as string | null,
-  /** 영상 대신 쓸 정지 사진(영상이 없거나 움직임 줄임 설정일 때) */
-  poster: null as string | null,
-  shotHint: "모델이 수트를 입고 제자리에서 한 바퀴 도는 영상 10~15초",
+  /**
+   * 스크롤로 넘기는 사진 묶음(2026-10-16 — 영상을 스크롤로 되감으면 끊겨서 사진 묶음으로 바꿨다). 비우면(null) 자리표시.
+   * 영상에서 뽑는 법(1초에 12장, 가로 1280, WebP):
+   *   ffmpeg -i 원본.mp4 -vf "fps=12,scale=1280:-2" -c:v libwebp -quality 62 public/brand/film/f%03d.webp
+   * 장 수(count)는 뽑힌 파일 수와 같아야 한다. 10초 영상이면 120장 · 약 3MB.
+   * 2026-10-16 지금 것은 화면 맞춤용 AI 생성 영상(Gemini, 오른쪽 아래 표시) — 오픈 전 실제 촬영본으로 바꾼다. TODO(고객확인)
+   */
+  sequence: { base: "/brand/film/f", pad: 3, ext: ".webp", count: 120 } as {
+    base: string;
+    pad: number;
+    ext: string;
+    count: number;
+  } | null,
+  /** 첫 장 — 사진 묶음이 오기 전 무대에 먼저 보인다 */
+  poster: "/brand/film/f001.webp" as string | null,
+  /** 움직임 줄임 설정일 때 히어로 뒤에 보이는 정지 사진 — 영상의 마지막 장면(완성된 재킷) */
+  still: "/brand/film-tailor-poster.jpg" as string | null,
+  shotHint: "패턴을 그리는 손에서 완성된 재킷까지 이어지는 영상 10초",
+  // 영상의 세 구간과 맞춘다: 패턴 그리기 → 선이 재킷으로 지어짐 → 마네킹 위 완성
   frames: [
-    { eyebrow: "THE CUT", title: "어깨에서 시작되는 선", body: "어깨가 맞으면 나머지가 따라옵니다. 기울기와 폭부터 잽니다." },
-    { eyebrow: "THE BACK", title: "등을 따라 떨어지는 재킷", body: "등의 둥글기를 재서 뒤에서 들뜨지 않게 짓습니다." },
-    { eyebrow: "THE MOVE", title: "앉고 팔을 들어도", body: "가봉에서 움직여 보고, 당기는 곳을 그 자리에서 고칩니다." },
+    {
+      eyebrow: "THE PATTERN",
+      title: "선 하나에서 시작합니다",
+      body: "스물네 곳의 치수로 당신만의 패턴을 종이 위에 그립니다.",
+    },
+    {
+      eyebrow: "THE MAKING",
+      title: "몸에 맞춰 지어 갑니다",
+      body: "재단하고, 입혀 보고, 맞지 않는 곳을 고치며 한 벌이 됩니다.",
+    },
+    {
+      eyebrow: "THE SUIT",
+      title: "당신의 이름이 붙은 한 벌",
+      body: "같은 옷이 세상에 하나뿐입니다. 치수는 기록으로 남습니다.",
+    },
   ],
 };
 
@@ -28,14 +54,42 @@ export interface Highlight {
 }
 
 export const HIGHLIGHTS: Highlight[] = [
-  { title: "스물네 곳을 잽니다", body: "어깨 기울기 · 등의 둥글기처럼 숫자 밖의 것도 기록합니다.", image: null, shotHint: "줄자로 어깨를 재는 손 클로즈업" },
-  { title: "원단은 손으로 고릅니다", body: "이탈리아 · 영국 밀의 원단 견본을 직접 만져 봅니다.", image: null, shotHint: "원단 견본 책을 넘기는 장면" },
-  { title: "가봉에서 한 번 더", body: "입어 보고, 서고 앉으며 맞지 않는 곳을 표시합니다.", image: null, shotHint: "가봉 중 초크로 표시하는 장면" },
-  { title: "단추 하나까지 고릅니다", body: "라펠 · 벤트 · 단추 · 안감 — 한 벌의 모든 선택을 함께 합니다.", image: null, shotHint: "단추 · 안감 견본 클로즈업" },
-  { title: "다음 한 벌은 더 쉽게", body: "치수와 선택이 기록으로 남아 두 번째는 상담 한 번이면 됩니다.", image: null, shotHint: "완성된 수트를 건네는 장면" },
+  {
+    title: "스물네 곳을 잽니다",
+    body: "어깨 기울기 · 등의 둥글기처럼 숫자 밖의 것도 기록합니다.",
+    image: null,
+    shotHint: "줄자로 어깨를 재는 손 클로즈업",
+  },
+  {
+    title: "원단은 손으로 고릅니다",
+    body: "이탈리아 · 영국 밀의 원단 견본을 직접 만져 봅니다.",
+    image: null,
+    shotHint: "원단 견본 책을 넘기는 장면",
+  },
+  {
+    title: "가봉에서 한 번 더",
+    body: "입어 보고, 서고 앉으며 맞지 않는 곳을 표시합니다.",
+    image: null,
+    shotHint: "가봉 중 초크로 표시하는 장면",
+  },
+  {
+    title: "단추 하나까지 고릅니다",
+    body: "라펠 · 벤트 · 단추 · 안감 — 한 벌의 모든 선택을 함께 합니다.",
+    image: null,
+    shotHint: "단추 · 안감 견본 클로즈업",
+  },
+  {
+    title: "다음 한 벌은 더 쉽게",
+    body: "치수와 선택이 기록으로 남아 두 번째는 상담 한 번이면 됩니다.",
+    image: null,
+    shotHint: "완성된 수트를 건네는 장면",
+  },
 ];
 
-/** 3 · 가까이 보기 — 왼쪽 목록을 고르면 오른쪽 큰 사진이 바뀐다 (애플 "Take a closer look"). */
+/**
+ * 3 · 가까이 보기 — 왼쪽 목록을 고르면 오른쪽 큰 사진이 바뀐다 (애플 "Take a closer look").
+ * 2026-10-16 사진은 화면 맞춤용 AI 생성(Gemini, 오른쪽 아래 표시) — 오픈 전 실제 촬영본으로 바꾼다. TODO(고객확인)
+ */
 export interface CloserItem {
   key: string;
   label: string;
@@ -45,9 +99,39 @@ export interface CloserItem {
 }
 
 export const CLOSER: CloserItem[] = [
-  { key: "lapel", label: "라펠", body: "노치 · 피크 · 숄. 얼굴형과 입을 자리에 맞춰 폭과 모양을 고릅니다.", image: null, shotHint: "라펠 클로즈업" },
-  { key: "shoulder", label: "어깨", body: "패드의 두께와 어깨선의 각도를 체형에 맞춰 정합니다.", image: null, shotHint: "어깨선 측면 클로즈업" },
-  { key: "buttons", label: "단추", body: "뿔 · 자개 · 메탈. 소매 단추는 실제로 열리는 리얼 버튼홀로 만들 수 있습니다.", image: null, shotHint: "소매 단추 클로즈업" },
-  { key: "lining", label: "안감", body: "계절과 취향에 따라 전체 · 반 안감, 색과 무늬를 고릅니다.", image: null, shotHint: "재킷 안감이 보이게 연 장면" },
-  { key: "fabric", label: "원단", body: "울 · 플란넬 · 리넨. 무게와 짜임으로 계절과 자리를 맞춥니다.", image: null, shotHint: "원단 짜임 매크로" },
+  {
+    key: "lapel",
+    label: "라펠",
+    body: "노치 · 피크 · 숄. 얼굴형과 입을 자리에 맞춰 폭과 모양을 고릅니다.",
+    image: "/brand/closer/lapel.webp",
+    shotHint: "라펠 클로즈업",
+  },
+  {
+    key: "shoulder",
+    label: "어깨",
+    body: "패드의 두께와 어깨선의 각도를 체형에 맞춰 정합니다.",
+    image: "/brand/closer/shoulder.webp",
+    shotHint: "어깨선 측면 클로즈업",
+  },
+  {
+    key: "buttons",
+    label: "단추",
+    body: "뿔 · 자개 · 메탈. 소매 단추는 실제로 열리는 리얼 버튼홀로 만들 수 있습니다.",
+    image: "/brand/closer/buttons.webp",
+    shotHint: "소매 단추 클로즈업",
+  },
+  {
+    key: "lining",
+    label: "안감",
+    body: "계절과 취향에 따라 전체 · 반 안감, 색과 무늬를 고릅니다.",
+    image: "/brand/closer/lining.webp",
+    shotHint: "재킷 안감이 보이게 연 장면",
+  },
+  {
+    key: "fabric",
+    label: "원단",
+    body: "울 · 플란넬 · 리넨. 무게와 짜임으로 계절과 자리를 맞춥니다.",
+    image: "/brand/closer/fabric.webp",
+    shotHint: "원단 짜임 매크로",
+  },
 ];

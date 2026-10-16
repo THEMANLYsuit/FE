@@ -3,7 +3,7 @@
 import { useRef } from "react";
 
 import { Scene } from "@/components/home/Scene";
-import { useReducedMotion, useScrollProgress } from "@/lib/useScroll";
+import { useReducedMotion, useScrollStep } from "@/lib/useScroll";
 
 /**
  * 스크롤로 읽히는 선언문 — 긴 무대를 내려가는 동안 화면은 붙잡혀 있고, 낱말이 한 마디씩 밝아진다.
@@ -23,7 +23,6 @@ export function ScrubText({
   text: string;
 }) {
   const stage = useRef<HTMLDivElement>(null);
-  const progress = useScrollProgress(stage);
   const reduced = useReducedMotion();
 
   const sentences = text.split(/(?<=\.)\s+/);
@@ -35,10 +34,12 @@ export function ScrubText({
         br: wi === arr.length - 1 && si < sentences.length - 1,
       })),
   );
-  // 처음 10% 는 비워 두고(무대에 들어오는 동안), 마지막 15% 는 다 밝은 채로 머문다 — 다음 장으로 넘기기 전에 읽을 틈
-  const lit = reduced
-    ? words.length
-    : Math.floor(((progress - 0.1) / 0.75) * (words.length + 1));
+  // 처음 10% 는 비워 두고(무대에 들어오는 동안), 마지막 15% 는 다 밝은 채로 머문다 — 다음 장으로 넘기기 전에 읽을 틈.
+  // 밝힌 낱말 수(정수)가 바뀔 때만 다시 그린다
+  const step = useScrollStep(stage, (p) =>
+    Math.max(0, Math.floor(((p - 0.1) / 0.75) * (words.length + 1))),
+  );
+  const lit = reduced ? words.length : step;
 
   return (
     <Scene id={id} label={label} bare>

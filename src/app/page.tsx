@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
 import { Chapter } from "@/components/home/Chapter";
@@ -37,14 +37,13 @@ const delay = (ms: number) =>
   ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
 const CHAPTERS = [
-  ["01", "재단", "#film"],
-  ["02", "몸", "#body"],
-  ["03", "한눈에", "#highlights"],
-  ["04", "과정", "#process"],
-  ["05", "가까이", "#closer"],
-  ["06", "기록", "#record"],
-  ["07", "원단", "#fabrics"],
-  ["08", "만남", "#booking"],
+  ["01", "몸", "#body"],
+  ["02", "한눈에", "#highlights"],
+  ["03", "과정", "#process"],
+  ["04", "가까이", "#closer"],
+  ["05", "기록", "#record"],
+  ["06", "원단", "#fabrics"],
+  ["07", "만남", "#booking"],
 ] as const;
 
 const PROMISES = [
@@ -81,109 +80,76 @@ export default async function Home() {
       <div aria-hidden="true" className="page-progress" />
       <SceneDots />
       <main id="main" className="story flex-1">
-        {/* ── 빅 히어로 ─────────────────────────────────────── */}
-        <Scene label="THE MANLY 맞춤정장" className="flex items-end">
-          <div
-            aria-hidden="true"
-            className="hero-bg absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 70% 60% at 65% 35%, #3a2f22 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 20% 80%, #1f1a15 0%, transparent 60%), linear-gradient(180deg, #0f0e0d 0%, #171411 55%, #0f0e0d 100%)",
-            }}
-          />
-          <div
-            aria-hidden="true"
-            className="hero-glow absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 35% 40% at 70% 30%, rgba(201,168,106,0.16) 0%, transparent 70%)",
-            }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(15,14,13,0.94) 0%, rgba(15,14,13,0.4) 45%, transparent 70%)",
-            }}
-          />
-
-          <div className="scene-text relative z-10 mx-auto w-full max-w-[1320px] px-5 pb-24 md:px-10 md:pb-14">
-            <p data-reveal className="text-accent tracking-label text-2xs">
-              BESPOKE TAILORING · SUWON
-            </p>
-            <h1 className="font-display text-primary leading-hero tracking-hero mt-5 text-hero break-keep">
-              <Line>당신의 몸에 맞춰</Line>
-              <Line i={1}>
-                <em className="text-accent-deep not-italic">짓는</em> 한 벌
-              </Line>
-            </h1>
-            <p
-              data-reveal
-              style={delay(300)}
-              className="text-secondary mt-7 max-w-[44ch] text-base leading-relaxed md:text-lg"
-            >
-              기성복이 맞지 않는 어깨와 허벅지를 위해, 상담에서 수령까지 여섯
-              번을 만납니다.
-            </p>
-            <div
-              data-reveal
-              style={delay(450)}
-              className="mt-10 flex flex-wrap items-center gap-4"
-            >
-              <Link href="/booking/" className={cta}>
-                상담 예약
-                <span className={ctaIcon}>
-                  <ArrowUpRight size={13} weight="light" aria-hidden="true" />
-                </span>
-              </Link>
-              <Link
-                href="/process/"
-                className="text-secondary hover:text-primary tracking-button ease-fluid inline-flex h-12 items-center text-sm underline underline-offset-8 transition-colors duration-300"
+        {/* ── 히어로 = 스크롤 필름의 첫 화면 ─────────────────────────
+            맨 위에서 내리기 시작하면 영상이 재생되고, 표제는 사라지며 문장이 하나씩 떠오른다 (ScrollFilm) */}
+        <ScrollFilm
+          hero={
+            <div className="mx-auto w-full max-w-[1320px] px-5 pb-24 md:px-10 md:pb-14">
+              <p data-reveal className="text-accent tracking-label text-2xs">
+                BESPOKE TAILORING · SUWON
+              </p>
+              <h1 className="font-display text-primary leading-hero tracking-hero mt-5 text-hero break-keep">
+                <Line>당신의 몸에 맞춰</Line>
+                <Line i={1}>
+                  <em className="text-accent-deep not-italic">짓는</em> 한 벌
+                </Line>
+              </h1>
+              <p
+                data-reveal
+                style={delay(300)}
+                className="text-secondary mt-7 max-w-[44ch] text-base leading-relaxed md:text-lg"
               >
-                제작 과정 보기
-              </Link>
+                기성복이 맞지 않는 어깨와 허벅지를 위해, 상담에서 수령까지 여섯
+                번을 만납니다.
+              </p>
+              <div
+                data-reveal
+                style={delay(450)}
+                className="mt-10 flex flex-wrap items-center gap-4"
+              >
+                <Link href="/booking/" className={cta}>
+                  상담 예약
+                  <span className={ctaIcon}>
+                    <ArrowUpRight size={13} weight="light" aria-hidden="true" />
+                  </span>
+                </Link>
+                <Link
+                  href="/process/"
+                  className="text-secondary hover:text-primary tracking-button ease-fluid inline-flex h-12 items-center text-sm underline underline-offset-8 transition-colors duration-300"
+                >
+                  제작 과정 보기
+                </Link>
+              </div>
+
+              {/* 목차 — 이 아래로 이어지는 장들. 누르면 그 장으로 */}
+              <nav
+                aria-label="목차"
+                data-reveal
+                style={delay(700)}
+                className="border-subtle mt-14 border-t pt-5 md:mt-20"
+              >
+                <ol className="flex flex-wrap gap-x-8 gap-y-2 md:gap-x-12">
+                  {CHAPTERS.map(([n, name, href]) => (
+                    <li key={n}>
+                      <a
+                        href={href}
+                        className="group text-muted hover:text-accent ease-fluid inline-flex min-h-8 items-baseline gap-2 text-xs transition-colors duration-300"
+                      >
+                        <span className="font-display tabular-nums">{n}</span>
+                        <span className="tracking-label text-2xs">{name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
             </div>
+          }
+        />
 
-            {/* 목차 — 이 아래로 이어지는 다섯 장. 누르면 그 장으로 */}
-            <nav
-              aria-label="목차"
-              data-reveal
-              style={delay(700)}
-              className="border-subtle mt-14 border-t pt-5 md:mt-20"
-            >
-              <ol className="flex flex-wrap gap-x-8 gap-y-2 md:gap-x-12">
-                {CHAPTERS.map(([n, name, href]) => (
-                  <li key={n}>
-                    <a
-                      href={href}
-                      className="group text-muted hover:text-accent ease-fluid inline-flex min-h-8 items-baseline gap-2 text-xs transition-colors duration-300"
-                    >
-                      <span className="font-display tabular-nums">{n}</span>
-                      <span className="tracking-label text-2xs">{name}</span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          </div>
-
-          <div
-            aria-hidden="true"
-            className="scroll-cue text-muted tracking-label absolute right-5 bottom-8 hidden flex-col items-center text-[0.65rem] md:right-10 md:flex"
-          >
-            SCROLL
-            <ArrowDown size={10} weight="light" className="mt-1" />
-          </div>
-        </Scene>
-
-        {/* ── 01 재단 — 스크롤 필름: 붙잡힌 무대에서 영상이 스크롤로 재생된다 ── */}
-        <ScrollFilm />
-
-        {/* ── 02 몸 — 표제는 붙잡히고, 약속이 하나씩 밝아진다 ───────── */}
+        {/* ── 01 몸 — 표제는 붙잡히고, 약속이 하나씩 밝아진다 ───────── */}
         <Chapter
           id="body"
-          n="02"
+          n="01"
           en="THE BODY"
           label="몸"
           title={["사진이 아니라", "몸으로 고릅니다"]}
@@ -208,27 +174,27 @@ export default async function Home() {
           </ol>
         </Chapter>
 
-        {/* ── 03 한눈에 — 가로로 넘기는 하이라이트 카드 ──────────────── */}
+        {/* ── 02 한눈에 — 가로로 넘기는 하이라이트 카드 ──────────────── */}
         <Highlights />
 
-        {/* ── 04 과정 — 붙잡힌 무대 ───────────────────────────── */}
+        {/* ── 03 과정 — 붙잡힌 무대 ───────────────────────────── */}
         <ProcessScene />
 
-        {/* ── 05 가까이 — 목록을 고르면 큰 사진이 바뀐다 ──────────────── */}
+        {/* ── 04 가까이 — 목록을 고르면 큰 사진이 바뀐다 ──────────────── */}
         <CloserLook />
 
-        {/* ── 06 기록 — 선언문 ─────────────────────────────────── */}
+        {/* ── 05 기록 — 선언문 ─────────────────────────────────── */}
         <ScrubText
           id="record"
           label="기록"
-          en="06 — THE RECORD"
+          en="05 — THE RECORD"
           text={MANIFESTO}
         />
 
-        {/* ── 07 원단 — 이름이 흘러 지나간다 ─────────────────────── */}
+        {/* ── 06 원단 — 이름이 흘러 지나간다 ─────────────────────── */}
         <Chapter
           id="fabrics"
-          n="07"
+          n="06"
           en="FABRICS"
           label="원단"
           title={["손으로 만져", "고르는 원단"]}
@@ -273,7 +239,7 @@ export default async function Home() {
           </div>
         </Chapter>
 
-        {/* ── 08 만남 — 마지막 한 화면 ───────────────────────────── */}
+        {/* ── 07 만남 — 마지막 한 화면 ───────────────────────────── */}
         <Scene id="booking" label="만남" className="flex items-center">
           <div
             aria-hidden="true"
@@ -285,7 +251,7 @@ export default async function Home() {
           />
           <div className="scene-text relative z-10 mx-auto w-full max-w-[1320px] px-5 py-24 text-center md:px-10">
             <p data-reveal className="text-accent tracking-label text-2xs">
-              08 — BOOKING
+              07 — BOOKING
             </p>
             <h2 className="font-display text-primary leading-hero tracking-hero mt-5 text-4xl break-keep md:text-hero">
               <Line>첫 상담은</Line>
