@@ -32,7 +32,7 @@ import { API_CONNECTED } from "@/lib/site";
  * 들어올 때 한 번 본다: 로그인 안 했거나 관리자가 아니면 → 관리자 로그인, 임시 비밀번호면 → 비밀번호 바꾸기.
  * 진짜 문지기는 서버다(/api/admin/** = ADMIN) — 여기서 보는 건 길 안내일 뿐, 화면을 열어도 서버가 데이터를 주지 않는다.
  *
- * 메뉴 중 아직 화면이 없는 것은 "준비 중" 으로 둔다(서버 API 는 있다). 하나씩 채워 간다.
+ * 메뉴의 ready 를 false 로 두면 "준비 중" 으로 보인다(새 메뉴를 먼저 걸어 둘 때).
  */
 type Icon = typeof House;
 type Item = {
@@ -57,20 +57,20 @@ const NAV: Item[] = [
     href: "/admin/bookings/",
     label: "예약",
     icon: CalendarCheck,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/orders/",
     label: "맞춤 주문",
     icon: ClipboardText,
-    ready: false,
+    ready: true,
   },
-  { href: "/admin/members/", label: "회원 · 치수", icon: Users, ready: false },
+  { href: "/admin/members/", label: "회원 · 치수", icon: Users, ready: true },
   {
     href: "/admin/fabrics/",
     label: "원단 · 스타일",
     icon: Scissors,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/film/",
@@ -82,7 +82,7 @@ const NAV: Item[] = [
     href: "/admin/access-logs/",
     label: "접속 기록",
     icon: ShieldCheck,
-    ready: false,
+    ready: true,
     superOnly: true,
   },
 ];

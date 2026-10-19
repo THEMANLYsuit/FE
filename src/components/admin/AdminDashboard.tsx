@@ -54,8 +54,8 @@ export function AdminDashboard() {
 
   const stats: [string, number, string | null][] = [
     ["오늘 예약", data.todayAppointments, null],
-    ["확인 기다리는 예약", data.requestedAppointments, null],
-    ["진행 중 맞춤 주문", data.inProgressOrders, null],
+    ["확인 기다리는 예약", data.requestedAppointments, "/admin/bookings/"],
+    ["진행 중 맞춤 주문", data.inProgressOrders, "/admin/orders/"],
     ["답 기다리는 문의", data.openInquiries, "/admin/inquiries/"],
   ];
 
@@ -102,19 +102,21 @@ export function AdminDashboard() {
           ) : (
             <ul className="border-subtle divide-subtle mt-3 divide-y border-y">
               {data.todayList.map((b) => (
-                <li
-                  key={b.id}
-                  className="flex items-center justify-between gap-4 py-3 text-sm"
-                >
-                  <span className="text-primary tabular-nums">
-                    {timeOf(b.startsAt)}
-                  </span>
-                  <span className="text-secondary flex-1">{b.typeLabel}</span>
-                  <span
-                    className={`text-2xs ${b.status === "CONFIRMED" ? "text-success" : "text-accent"}`}
+                <li key={b.id}>
+                  <Link
+                    href={`/admin/bookings/?id=${b.id}`}
+                    className="hover:bg-surface/60 flex items-center justify-between gap-4 px-2 py-3 text-sm"
                   >
-                    {b.statusLabel}
-                  </span>
+                    <span className="text-primary tabular-nums">
+                      {timeOf(b.startsAt)}
+                    </span>
+                    <span className="text-secondary flex-1">{b.typeLabel}</span>
+                    <span
+                      className={`text-2xs ${b.status === "CONFIRMED" ? "text-success" : "text-accent"}`}
+                    >
+                      {b.statusLabel}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -162,17 +164,19 @@ export function AdminDashboard() {
         ) : (
           <ul className="border-subtle divide-subtle mt-3 divide-y border-y">
             {data.dueThisWeek.map((o) => (
-              <li
-                key={o.orderNumber}
-                className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"
-              >
-                <span className="text-primary">{o.title}</span>
-                <span className="text-muted text-2xs">
-                  {o.orderNumber} · {o.stageLabel}
-                </span>
-                <span className="text-accent text-2xs tabular-nums">
-                  {o.dueOn ? dateOf(o.dueOn) : ""}
-                </span>
+              <li key={o.orderNumber}>
+                <Link
+                  href={`/admin/orders/?no=${encodeURIComponent(o.orderNumber)}`}
+                  className="hover:bg-surface/60 flex flex-wrap items-center justify-between gap-3 px-2 py-3 text-sm"
+                >
+                  <span className="text-primary">{o.title}</span>
+                  <span className="text-muted text-2xs">
+                    {o.orderNumber} · {o.stageLabel}
+                  </span>
+                  <span className="text-accent text-2xs tabular-nums">
+                    {o.dueOn ? dateOf(o.dueOn) : ""}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
