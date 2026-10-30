@@ -54,6 +54,9 @@ export async function Footer() {
             <Link href="/privacy/" className="text-primary hover:text-accent ease-fluid inline-flex min-h-11 items-center text-xs font-semibold transition-colors duration-300">
               개인정보처리방침
             </Link>
+            <Link href="/cookies/" className="text-secondary hover:text-primary ease-fluid inline-flex min-h-11 items-center text-xs transition-colors duration-300">
+              쿠키 정책
+            </Link>
           </nav>
           <dl className="mt-6 grid gap-x-12 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map(([label, value]) => (
