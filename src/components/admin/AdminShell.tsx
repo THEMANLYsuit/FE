@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Buildings,
   CalendarCheck,
   ChatCircleText,
   ClipboardText,
@@ -78,6 +79,7 @@ const NAV: Item[] = [
     icon: FilmStrip,
     ready: true,
   },
+  { href: "/admin/business/", label: "푸터 · 사업자 정보", icon: Buildings, ready: true },
   {
     href: "/admin/access-logs/",
     label: "접속 기록",

@@ -1,9 +1,14 @@
 import Link from "next/link";
 
-import { BUSINESS, KAKAO_CHANNEL, SHOP, SNS } from "@/data/business";
+import { KAKAO_CHANNEL, SHOP, SNS } from "@/data/business";
+import { getBusiness } from "@/lib/business";
 
-/** 전역 푸터. 사업자 정보와 약관 링크는 전자상거래법 제10조의 표기 의무다 (data/business.ts). */
-export function Footer() {
+/**
+ * 전역 푸터. 사업자 정보와 약관 링크는 전자상거래법 제10조의 표기 의무다.
+ * 사업자 정보는 빌드할 때 서버에서 받는다 — 관리자 › 사업자 정보에서 고친다(lib/business, 서버 V13).
+ */
+export async function Footer() {
+  const BUSINESS = await getBusiness();
   const rows: [string, string][] = [
     ["상호", BUSINESS.companyName],
     ["대표자", BUSINESS.representative],

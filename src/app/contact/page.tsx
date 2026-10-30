@@ -4,12 +4,15 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { PageBand } from "@/components/ui/PageBand";
-import { BUSINESS, KAKAO_CHANNEL, SHOP } from "@/data/business";
+import { KAKAO_CHANNEL, SHOP } from "@/data/business";
+import { getBusiness } from "@/lib/business";
 
 export const metadata: Metadata = { title: "문의하기", robots: { index: false, follow: false } };
 
 /** 문의하기 — 왼쪽은 글로 보내는 문의, 오른쪽은 바로 닿는 길(전화 · 카카오톡 · 매장). */
-export default function Page() {
+export default async function Page() {
+  // 전화 · 주소 — 푸터와 같은 사업자 정보(관리자 › 사업자 정보, 빌드할 때 받는다)
+  const BUSINESS = await getBusiness();
   return (
     <>
       <Header />

@@ -760,3 +760,21 @@ export const listAccessLogs = (filter: {
     "GET",
     `/api/admin/access-logs${qs({ ...filter, q: filter.q.trim() })}`,
   );
+
+// ── 푸터 사업자 정보 (서버 V13) ──────────────────────────
+
+/** 전자상거래법 제10조 표기 항목 — 손님 화면 푸터 · 문의 페이지에 그대로 나간다(빌드할 때 받는다). */
+export interface SiteBusiness {
+  companyName: string;
+  representative: string;
+  registrationNumber: string;
+  mailOrderNumber: string;
+  address: string;
+  phone: string;
+  email: string;
+  privacyOfficer: string;
+  hosting: string;
+}
+
+export const getSiteBusiness = () => call<SiteBusiness>("GET", "/api/admin/site-business");
+export const saveSiteBusiness = (input: SiteBusiness) => call<SiteBusiness>("PUT", "/api/admin/site-business", input);
