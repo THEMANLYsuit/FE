@@ -13,7 +13,7 @@ export function MainHero() {
   const reduced = useReducedMotion();
   const { video, poster } = MAIN_HERO;
   return (
-    <section aria-label="THE MANLY" className="relative flex h-[100dvh] items-center justify-center overflow-hidden bg-black">
+    <section aria-label="THE MANLY" className="relative flex h-[100dvh] snap-start items-center justify-center overflow-hidden bg-black">
       <h1 className="sr-only">THE MANLY 맞춤정장</h1>
       {video && !reduced ? (
         <video src={video} poster={poster ?? undefined} autoPlay muted loop playsInline aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />

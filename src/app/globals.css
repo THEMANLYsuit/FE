@@ -418,3 +418,36 @@ html[data-motion="on"] .step-numeral {
     transform: none !important;
   }
 }
+
+/*
+ * ── 메인: 한 번 스크롤에 한 화면 + 또르륵 떨어지는 등장 (2026-11-02 디자이너) ──
+ * 메인에서만 html 에 .snap-home 이 붙는다(SnapHome). 화면마다 snap-start 표지가 있고, 휠 한 번이면 다음 표지로 붙는다.
+ * 화면이 절반 넘게 들어오면 그 화면이 data-in="true" 가 되고, 안의 .drop 들이 위에서 차례로 떨어진다(--i 순서).
+ * 살짝 지나쳤다 돌아오는 곡선이라 "또르륵" 구른다. 화면을 벗어나면 되돌려 두어 다시 들어올 때 또 떨어진다.
+ * 움직임 줄임 설정이면 붙는 스크롤도 떨어지는 연출도 끈다 — 그냥 내려 읽는다.
+ */
+html.snap-home {
+  scroll-snap-type: y mandatory;
+}
+html[data-motion="on"] [data-drop] .drop {
+  opacity: 0;
+  transform: translateY(-56px);
+  transition:
+    opacity 500ms var(--ease-soft),
+    transform 900ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+html[data-motion="on"] [data-drop][data-in="true"] .drop {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.snap-home {
+    scroll-snap-type: none;
+  }
+  html[data-motion="on"] [data-drop] .drop {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

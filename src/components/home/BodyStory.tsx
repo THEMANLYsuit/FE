@@ -15,6 +15,7 @@ import { useReducedMotion, useScrollStep } from "@/lib/useScroll";
  *
  * 무대는 장면 수 × 화면 높이만큼 길고, 안쪽 한 화면이 sticky 로 붙어 있다. 장면 번호(정수)가 바뀔 때만 다시 그린다(useScrollStep).
  * 움직임 줄임 설정이면 바뀌는 것은 같고 옅어지는 연출만 뺀다.
+ * 장면마다 붙는 표지(snap-start)가 있어 휠 한 번에 한 장면씩 넘어간다(메인의 SnapHome).
  * 화살표 위치는 시안 사진(세 사람이 가로로 나란히) 기준의 대략값이다 — 실제 사진이 오면 ARROWS 좌표만 맞춘다.
  */
 
@@ -29,6 +30,10 @@ export function BodyStory() {
   const fit = step >= 2;
   return (
     <section ref={stage} id="body-story" aria-label="체형과 맞춤" className="relative" style={{ height: `${SCENES * 100}dvh` }}>
+      {/* 장면마다 한 화면 높이 간격의 붙는 표지 — 휠 한 번에 한 장면 */}
+      {Array.from({ length: SCENES }, (_, i) => (
+        <span key={i} aria-hidden="true" className="absolute inset-x-0 h-px snap-start" style={{ top: `${i * 100}dvh` }} />
+      ))}
       <div className="sticky top-0 flex h-[100dvh] flex-col items-center overflow-hidden bg-black">
         {/* 제목 — 두 장씩 같은 제목. 바뀔 때 겹쳐 옅어진다 */}
         <div className="relative z-10 mt-24 h-10 w-full text-center md:mt-28">
