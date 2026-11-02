@@ -30,9 +30,9 @@ export function OfflineShop({ business }: { business: BusinessInfo }) {
         </div>
 
         <div className="flex flex-col justify-between gap-10 pt-8 md:pt-2 md:pl-14">
-          <p style={dropAt(1)} className="drop font-display text-2xl tracking-[0.18em] text-white md:text-3xl">
-            THE MANLY
-          </p>
+          {/* 고객 가로형 로고(엠블럼 + THE MANLY)를 흰색으로 — 레오네페리토 화면의 상호 로고 자리 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img style={dropAt(1)} src="/brand/logo/lockup-white.webp" alt="THE MANLY" width={960} height={193} className="drop h-auto w-[240px] md:w-[300px]" />
           <div className="flex flex-col gap-8">
             <dl className="flex flex-col gap-9">
               <div style={dropAt(2)} className="drop">

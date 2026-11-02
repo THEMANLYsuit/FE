@@ -180,16 +180,11 @@ export function Header({ overHero = false, film = false }: { overHero?: boolean;
 }
 
 /**
- * 엠블럼 자리. TODO(고객확인) 디자이너의 방패 엠블럼 파일(SVG)이 오면 이 자리를 그 파일로 바꾼다 —
- * 지금은 크기 · 위치를 맞추는 자리표시(방패 윤곽 + TM).
+ * 엠블럼 — 고객 로고 파일(자료 모음집 › 더 멘리 로고, 골드)을 웹용으로 줄인 것(public/brand/logo).
+ * 링크 이름(aria-label)이 따로 있어 사진은 꾸밈(alt="")이다.
  */
 function Emblem() {
-  return (
-    <svg width="28" height="32" viewBox="0 0 28 32" fill="none" aria-hidden="true" className="text-accent">
-      <path d="M14 1.5 26 6v10.5c0 7-5.2 11.6-12 14-6.8-2.4-12-7-12-14V6L14 1.5Z" stroke="currentColor" strokeWidth="1.2" />
-      <text x="14" y="19.5" textAnchor="middle" fontSize="8" fill="currentColor" fontFamily="serif" letterSpacing="0.5">
-        TM
-      </text>
-    </svg>
-  );
+  // 정적 내보내기라 next/image 최적화가 없다
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/brand/logo/emblem-gold.webp" alt="" width={240} height={250} className="h-10 w-auto md:h-12" />;
 }

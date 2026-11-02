@@ -23,7 +23,9 @@ export async function Footer() {
   return (
     <footer className="bg-band border-subtle mt-auto border-t">
       <div className="mx-auto max-w-[1320px] px-5 py-20 md:px-15 md:py-28">
-        <p className="font-display text-primary text-2xl tracking-[0.22em]">THE MANLY</p>
+        {/* 고객 가로형 로고(흰색) — 바탕이 어둡다 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo/lockup-white.webp" alt="THE MANLY" width={960} height={193} loading="lazy" className="h-auto w-[200px] md:w-[240px]" />
         <p className="text-secondary mt-4 max-w-md text-sm">{BUSINESS.brandKo} · 수원 영통 매장 · {SHOP.hours} · {SHOP.closedDays}</p>
 
         <nav aria-label="둘러보기" className="mt-10 flex flex-wrap gap-x-7">
