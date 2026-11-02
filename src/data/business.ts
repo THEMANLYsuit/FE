@@ -29,6 +29,9 @@ export const SHOP = {
   mapQuery: "경기도 수원시 영통구 매영로425번길 1",
 } as const;
 
+/** 햄버거 메뉴의 «기성복» — 같은 회사의 기성복 몰(레오네페리토)로 새 창 */
+export const READY_TO_WEAR_URL = "https://leoneferito.kr/";
+
 export const SNS = {
   instagram: "https://www.instagram.com/leoneferito_/",
   youtube: "https://www.youtube.com/@THEMANLY_OFFICIAL",
