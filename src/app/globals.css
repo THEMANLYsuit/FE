@@ -441,11 +441,22 @@ html[data-motion="on"] [data-drop][data-in="true"] .drop {
   opacity: 1;
   transform: none;
 }
+/* 이어지는 점선 — 위의 단계가 떨어진 뒤 아래로 그어진다(제작 순서 화면, 2026-11-06) */
+html[data-motion="on"] [data-drop] .drop-line {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 420ms var(--ease-soft);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+html[data-motion="on"] [data-drop][data-in="true"] .drop-line {
+  transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
   html.snap-home {
     scroll-snap-type: none;
   }
-  html[data-motion="on"] [data-drop] .drop {
+  html[data-motion="on"] [data-drop] .drop,
+  html[data-motion="on"] [data-drop] .drop-line {
     opacity: 1;
     transform: none;
     transition: none;
