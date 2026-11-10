@@ -157,16 +157,17 @@ export const MAIN_HERO = {
 /*
  * 사진 — 2026-11-09 고객 원본(「더맨리 메인 이미지」 10614 × 5970, 배경 #090909). 2560 × 1440 webp 로 줄여 public/brand/body 에 둔다.
  *   suits.webp   세 사람 정장 합본 그대로
- *   bodies.webp  같은 배경색 위에 좌측 · 우측 맨몸 레이어를 얹은 것 — 레이어가 합본과 같은 자리라 바뀔 때 사람이 튀지 않는다
- * TODO(고객확인) 가운데 인물의 맨몸 사진이 아직 없다. 오면 bodies.webp 에 얹고 centerBodyPending 을 false 로.
+ *   bodies.webp  같은 배경색 위에 좌측 · 우측 맨몸 레이어를 얹고, 가운데 인물은 합본의 정장 모습을 그대로 옮겼다
+ *                (2026-11-10 "가운데 인물도 넣어 달라" — 가운데 맨몸 사진이 없어 정장으로). 레이어가 합본과 같은 자리라 바뀔 때 사람이 튀지 않는다
+ * TODO(고객확인) 가운데 인물의 맨몸 사진이 오면 bodies.webp 의 가운데를 바꾼다.
  */
 export const BODY_STORY = {
   /** ①② 세 체형 — 마른 체형 · 운동 체형(가운데) · 넉넉한 체형 을 한 장에 */
-  bodies: { image: "/brand/body/bodies.webp" as string | null, alt: "마른 체형과 배가 나온 체형의 남성이 흰 티셔츠 차림으로 마주 서 있다" },
+  bodies: { image: "/brand/body/bodies.webp" as string | null, alt: "흰 티셔츠 차림의 마른 체형 남성과 배가 나온 체형 남성 사이에, 어깨가 넓은 남성이 정장을 입고 서 있다" },
   /** ③④ 같은 세 사람이 맞춤 수트를 입은 사진 */
   suits: { image: "/brand/body/suits.webp" as string | null, alt: "마른 체형, 운동으로 상체가 커진 체형, 배가 나온 체형의 세 남성이 각자의 체형에 맞춘 수트를 입고 서 있다" },
-  /** 가운데 인물 맨몸 사진이 아직 없다 — 그동안 ①② 장면의 가운데는 비우고 가운데 화살표도 숨긴다 */
-  centerBodyPending: true,
+  /** 가운데 인물 사진이 없으면 true — ①② 장면의 가운데 화살표를 숨긴다. 지금은 합본의 정장 모습을 넣어 false */
+  centerBodyPending: false,
   bodiesTitle: "Various Body Types",
   fitTitle: "Custom Fit",
   /** ④ 설명 글. TODO(고객확인) 디자이너 문구가 오면 바꾼다 */

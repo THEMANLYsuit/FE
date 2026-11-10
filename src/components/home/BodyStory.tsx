@@ -107,9 +107,9 @@ function Arrows({ className, center, mobile = false }: { className: string; cent
         {center && (
           <>
             {/* 가운데 — 넓은 어깨 */}
-            <path d="M385 235 L615 235" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
+            <path d="M380 230 L625 230" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
             {/* 가운데 — 좁은 허리 */}
-            <path d="M430 440 C470 465 530 465 570 440" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
+            <path d="M432 418 C470 445 530 445 568 418" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
           </>
         )}
         {/* 오른쪽 — 나온 배 */}
