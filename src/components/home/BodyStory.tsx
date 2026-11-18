@@ -16,7 +16,8 @@ import { useReducedMotion, useScrollStep } from "@/lib/useScroll";
  * 무대는 장면 수 × 화면 높이만큼 길고, 안쪽 한 화면이 sticky 로 붙어 있다. 장면 번호(정수)가 바뀔 때만 다시 그린다(useScrollStep).
  * 움직임 줄임 설정이면 바뀌는 것은 같고 옅어지는 연출만 뺀다.
  * 장면마다 붙는 표지(snap-start)가 있어 휠 한 번에 한 장면씩 넘어간다(메인의 SnapHome).
- * 화살표 좌표는 고객 원본(16:9, 2026-11-09) 기준이다 — 사진과 같은 비율(1000 × 563)의 SVG 를 사진과 같은 자리(아래 가운데)에 맞춘다.
+ * 2026-11-18 고객 요청 "사람들이 너무 작다": 원본(10614 × 5970)에서 세 사람만 남기고 잘라(x 850~9650 · y 870~5140, 무릎 위까지)
+ * 2560 × 1242 로 내보낸다. 두 장을 같은 자리로 잘라 바뀔 때 사람이 튀지 않는다. 화살표는 이 사진과 같은 비율(1100 × 534)의 SVG.
  * 바탕은 사진 배경색(#090909)과 같게 — 화면 비율이 달라 사진 둘레가 남아도 경계가 보이지 않는다.
  */
 
@@ -47,8 +48,8 @@ export function BodyStory() {
         </div>
 
         {/* 사진 두 장(체형 · 수트)이 같은 자리에 겹쳐 있다 */}
-        {/* 폰은 가로 사진이 작아서 양옆 빈 배경을 조금 잘라(116vw — 사람은 사진 가로 8 ~ 90% 안에 있다) 키우고, 화면 가운데에 둔다 */}
-        <div className="relative mt-6 w-full max-w-[1100px] flex-1 max-md:w-[116vw] max-md:max-w-none">
+        {/* 사진은 이미 세 사람만 남게 잘려 있어 폰에서도 화면 폭 그대로. PC 는 화면 높이를 채우도록 넓게 둔다 */}
+        <div className="relative mt-6 w-full max-w-[1600px] flex-1">
           <Photo src={BODY_STORY.bodies.image} alt={BODY_STORY.bodies.alt} hint="세 체형 사진 (상의 탈의, 가로 한 장)" className={`${fade} ${fit ? "opacity-0" : "opacity-100"}`} />
           <Arrows center={!BODY_STORY.centerBodyPending} className={`${fade} ${step === 1 ? "opacity-100" : "opacity-0"}`} />
           <Arrows center={!BODY_STORY.centerBodyPending} mobile className={`${fade} ${step === 1 ? "opacity-100" : "opacity-0"}`} />
@@ -85,35 +86,39 @@ function Photo({ src, alt, hint, className }: { src: string | null; alt: string;
   );
 }
 
-/** 빨간 화살표 — 왼쪽 사람 가슴, 가운데 사람 어깨 넓이 · 허리, 오른쪽 사람 배. 좌표는 사진과 같은 1000 × 563 기준 */
+/**
+ * 빨간 화살표 (2026-11-18 고객 요청) — 왼쪽 사람 팔통, 가운데 사람 어깨 끝선 · 허리, 오른쪽 사람 배 라인을 따라 아래로.
+ * 좌표는 잘라 낸 사진과 같은 1100 × 534 기준. 선은 화면 크기와 상관없이 1.5px(non-scaling-stroke)로 얇게, 화살촉도 작게.
+ */
 function Arrows({ className, center, mobile = false }: { className: string; center: boolean; mobile?: boolean }) {
   // 사진과 같은 자리 — PC 는 아래에 붙고(xMidYMax), 폰은 가운데(xMidYMid). preserveAspectRatio 는 CSS 로 못 바꿔 둘을 그리고 하나만 보인다
   const id = mobile ? "body-arrow-m" : "body-arrow";
+  const line = { markerStart: `url(#${id})`, markerEnd: `url(#${id})` };
   return (
     <svg
-      viewBox="0 0 1000 563"
+      viewBox="0 0 1100 534"
       preserveAspectRatio={mobile ? "xMidYMid meet" : "xMidYMax meet"}
       aria-hidden="true"
       className={`pointer-events-none absolute inset-0 h-full w-full ${mobile ? "md:hidden" : "max-md:hidden"} ${className}`}
     >
       <defs>
-        <marker id={id} viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-          <path d="M0 0 10 5 0 10Z" fill="#C42A2A" />
+        <marker id={id} viewBox="0 0 10 10" refX="7" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M1 1 9 5 1 9" fill="none" stroke="#C83A3A" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </marker>
       </defs>
-      <g fill="none" stroke="#C42A2A" strokeWidth="4" strokeLinecap="round">
-        {/* 왼쪽 — 얇은 가슴 */}
-        <path d="M112 318 C150 356 205 356 244 318" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
+      <g fill="none" stroke="#C83A3A" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke">
+        {/* 왼쪽 — 팔통(위팔) 둘레 */}
+        <path d="M26 336 C38 360 70 360 82 336" vectorEffect="non-scaling-stroke" {...line} />
         {center && (
           <>
-            {/* 가운데 — 넓은 어깨 */}
-            <path d="M380 230 L625 230" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
-            {/* 가운데 — 좁은 허리 */}
-            <path d="M432 418 C470 445 530 445 568 418" markerStart={`url(#${id})`} markerEnd={`url(#${id})`} />
+            {/* 가운데 — 어깨 끝선에서 끝선까지 */}
+            <path d="M424 214 Q558 184 694 214" vectorEffect="non-scaling-stroke" {...line} />
+            {/* 가운데 — 허리 */}
+            <path d="M494 378 C526 404 600 404 632 378" vectorEffect="non-scaling-stroke" {...line} />
           </>
         )}
-        {/* 오른쪽 — 나온 배 */}
-        <path d="M692 250 C664 305 668 360 702 402" markerEnd={`url(#${id})`} />
+        {/* 오른쪽 — 배 라인을 따라 아래로 */}
+        <path d="M896 264 C866 314 862 392 880 440" vectorEffect="non-scaling-stroke" markerEnd={`url(#${id})`} />
       </g>
     </svg>
   );
