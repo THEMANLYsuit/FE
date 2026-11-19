@@ -31,6 +31,17 @@ export const SHOP = {
   mapUrl: "https://naver.me/xJGvF38R",
 } as const;
 
+/**
+ * 네이버 예약 — 매장(네이버 플레이스 더맨리)의 예약 상품 둘. 2026-11-19 고객 요청: 상담 · 렌탈 예약은 네이버로 받는다.
+ * 주소는 플레이스에 걸린 예약 상품 그대로(사업장 1461811). 상품을 지우거나 새로 만들면 번호가 바뀌니 여기도 바꾼다.
+ */
+export const NAVER_BOOKING = {
+  /** «더맨리 상담예약» — 방문상담 · 채촌 · 피팅. 상담 & 문의 «바로 상담 및 예약하기» */
+  consultation: "https://booking.naver.com/booking/13/bizes/1461811/items/6925660",
+  /** «렌탈 제품 예약 시스템» — 렌탈 페이지 «예약하기» */
+  rental: "https://booking.naver.com/booking/13/bizes/1461811/items/7852716",
+} as const;
+
 /** 햄버거 메뉴의 «기성복» — 같은 회사의 기성복 몰(레오네페리토)로 새 창 */
 export const READY_TO_WEAR_URL = "https://leoneferito.kr/";
 
