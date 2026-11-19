@@ -5,7 +5,8 @@
 export const BUSINESS = {
   brand: "THE MANLY",
   brandKo: "더맨리 맞춤정장",
-  companyName: "레오네페리토 (LEONEFERITO)",
+  // 2026-11-19 나이스페이 심사: 사업자등록증 상호는 «스토익컴퍼니»(레오네페리토 · 더맨리는 브랜드 이름)
+  companyName: "스토익컴퍼니",
   representative: "조강현",
   registrationNumber: "881-15-02245",
   mailOrderNumber: "2024-수원영통-0059",
