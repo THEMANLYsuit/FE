@@ -19,6 +19,8 @@ export const BUSINESS = {
 export const KAKAO_CHANNEL = {
   name: "더맨리 (THE MANLY)",
   chat: "https://pf.kakao.com/_ZiAxiX/chat",
+  /** 채널 추가 — 상담 & 문의 «채널 추가하고 소식 받기» */
+  friend: "https://pf.kakao.com/_ZiAxiX/friend",
 } as const;
 
 /** 매장 안내 — 예약 규칙(BE app.booking)과 같은 값이어야 한다. 화 · 수 휴무. */
